@@ -30,6 +30,8 @@
                 <input type="file" class="form-control-file" id="files" name="files[]" multiple>
             </div>
 
+            <div id="file-previews" class="mt-3"></div>
+
             <div class="form-group">
                 <label for="commit_messages">Commit Messages (optional)</label>
                 <input type="text" class="form-control" id="commit_messages" name="commit_messages[]" placeholder="Enter commit message for each file">
@@ -38,6 +40,37 @@
             <button type="submit" class="btn btn-primary">Create Project</button>
         </form>
     </div>
+
+    <script>
+        document.getElementById('files').addEventListener('change', function(event) {
+            const fileInput = event.target;
+            const fileList = fileInput.files;
+            const filePreviews = document.getElementById('file-previews');
+
+            filePreviews.innerHTML = '';
+
+            Array.from(fileList).forEach((file, index) => {
+                const filePreview = document.createElement('div');
+                filePreview.classList.add('file-preview');
+
+                const fileName = document.createElement('span');
+                fileName.textContent = file.name;
+
+                const removeButton = document.createElement('button');
+                removeButton.type = 'button';
+                removeButton.textContent = 'Cancel';
+                removeButton.classList.add('btn', 'btn-danger', 'btn-sm', 'ml-2');
+                removeButton.addEventListener('click', () => {
+                    fileInput.value = '';
+                    filePreviews.removeChild(filePreview);
+                });
+
+                filePreview.appendChild(fileName);
+                filePreview.appendChild(removeButton);
+                filePreviews.appendChild(filePreview);
+            });
+        });
+    </script>
 @endsection
 
 

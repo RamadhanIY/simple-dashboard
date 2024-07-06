@@ -24,10 +24,12 @@
     <!-- Heading (Ganti Font)-->
 
 
-    <div id="projects" class="sidebar-item p-3" href="#">
+    <div id="projects" class="sidebar-item p-3" style="cursor: pointer;">
         <i class="fas fa-fw fa-cog"></i>
         <span>Projects</span>
     </div>
+    
+    
 
     <div id="logout" class="sidebar-item p-3" data-bs-toggle="modal" data-bs-target="#logoutModal">
         <i class="fas fa-fw fa-cog"></i>

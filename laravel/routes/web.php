@@ -33,12 +33,12 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 // Route to the dashboard
 // Route to the dashboard
 
-Route::redirect('/dashboard', '/projects');
+Route::redirect('/dashboard', '/projects')->name('dashboard');
 
 Route::middleware(['auth'])->group(function () {
     Route::get('projects', [ProjectController::class, 'index'])->name('projects.index');
     Route::get('projects/create', [ProjectController::class, 'create'])->name('projects.create');
-    Route::post('projects', [ProjectController::class, 'store'])->name('projects.store');
+    Route::post('/projects', [ProjectController::class, 'store'])->name('projects.store');
     Route::get('projects/{project}', [ProjectController::class, 'show'])->name('projects.show');
     Route::get('projects/{project}/edit', [ProjectController::class, 'edit'])->name('projects.edit');
     Route::put('projects/{project}', [ProjectController::class, 'update'])->name('projects.update');

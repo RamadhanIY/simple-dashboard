@@ -68,6 +68,11 @@
             modal.setAttribute('aria-hidden', 'true');
         }
     </script>
+    <script>
+        document.getElementById('projects').addEventListener('click', function() {
+            window.location.href = '{{ route('projects.index') }}';
+        });
+    </script>
 
 
 </body>
