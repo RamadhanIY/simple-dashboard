@@ -62,3 +62,31 @@ html, body {
         height: 100%;
     }
 }
+
+body, html {
+    height: 100%;
+}
+.container-fluid {
+    padding: 0;
+}
+.sidebar-wrapper {
+    width: 250px;
+    height: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1;
+    background-color: #f8f9fa;
+    border-right: 1px solid #dee2e6;
+}
+.content-wrapper {
+    margin-left: 250px;
+    width: calc(100% - 250px);
+}
+.navbar-wrapper {
+    position: fixed;
+    top: 0;
+    left: 250px;
+    width: calc(100% - 250px);
+    z-index: 2;
+}
