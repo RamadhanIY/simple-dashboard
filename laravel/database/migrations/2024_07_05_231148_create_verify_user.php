@@ -13,17 +13,25 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->string('verification_code')->nullable();
-            $table->boolean('is_verified')->default(false);
+        Schema::create('verify_user', function (Blueprint $table) {
+            $table->integer('user_id');
+            $table->string('token');
+            $table->timestamps();
         });
+  
+        Schema::table('users', function (Blueprint $table) {
+            $table->boolean('is_email_verified')->default(0);
+        });
+    
     }
 
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
     public function down()
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn('verification_code');
-            $table->dropColumn('is_verified');
-        });
+        Schema::dropIfExists('verify_user');
     }
 };

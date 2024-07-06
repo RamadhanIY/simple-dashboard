@@ -12,6 +12,9 @@
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href= "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=="
     crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src="https://kit.fontawesome.com/0c265f6a3f.js" crossorigin="anonymous"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+
 </head>
 
 <body>
@@ -37,54 +40,18 @@
                     <a href="#">
                         <i class="fa-regular fa-bookmark"></i>
                         Add Project
-                        <span class="notification-badge">5</span>
+                    </a>
+                </li>
+                <li class="nav-item mb-1">
+                    <a href="#">
+                        <i id="logoutIcon" class="fa-solid fa-arrow-right-from-bracket"></i>
+                        Logout
                     </a>
                 </li>
                 
-                <li class="sidebar-item  nav-item mb-1">
-                    <a href="#" 
-                       class="sidebar-link collapsed" 
-                       data-bs-toggle="collapse"
-                       data-bs-target="#settings"
-                       aria-expanded="false"
-                       aria-controls="settings">
-                        <i class="fas fa-cog pe-2"></i>
-                        <span class="topic">Settings </span>
-                    </a>
-                    <ul id="settings" 
-                        class="sidebar-dropdown list-unstyled collapse" 
-                        data-bs-parent="#sidebar">
-                        <li class="sidebar-item">
-                            <a href="#" class="sidebar-link">
-                                <i class="fas fa-sign-in-alt pe-2"></i>
-                                <span class="topic"> Login</span>
-                            </a>
-                        </li>
-                        <li class="sidebar-item">
-                            <a href="#" class="sidebar-link">
-                                <i class="fas fa-user-plus pe-2"></i>
-                                <span class="topic">Register</span>
-                            </a>
-                        </li>
-                        <li class="sidebar-item">
-                            <a href="#" class="sidebar-link">
-                                <i class="fas fa-sign-out-alt pe-2"></i>
-                                <span class="topic">Log Out</span>
-                            </a>
-                        </li>
-                    </ul>
-                </li>
+                
             </ul>
             <hr>
-            <div class="d-flex">
-
-                <i class="fa-solid fa-book  me-2"></i>
-                <span>
-                    <h6 class="mt-1 mb-0">
-                          Geeks for Geeks Learning Portal
-                      </h6>
-                </span>
-            </div>
         </div>
 
         <div class="bg-light flex-fill">
@@ -96,28 +63,37 @@
                 </a>
                 <span class="ms-3">GFG Portal</span>
             </div>
-            <div class="p-4">
-                <nav style="--bs-breadcrumb-divider:'>';font-size:14px">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item">
-                            <i class="fa-solid fa-house"></i>
-                        </li>
-                        <li class="breadcrumb-item">Learning Content</li>
-                        <li class="breadcrumb-item">Next Page</li>
-                    </ol>
-                </nav>
-
-                <hr>
+            
                 {{-- Page Content --}}
-                <div class="row">
-                    <div class="col">
-                        <p>Page content goes here</p>
-                    </div>
-                </div>
+                @include('components.project-list')
             </div>
 
         </div>
     </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#logoutIcon').on('click', function() {
+                $.ajax({
+                    url: '{{ route("logout") }}',
+                    type: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}' 
+                    },
+                    success: function(response) {
+
+                        window.location.href = '{{ route("login.form") }}'; 
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error:', error);
+                    }
+                });
+            });
+        });
+    </script>
+    
+
 </body>
 
 </html>

@@ -1,6 +1,5 @@
-<!-- resources/views/auth/register.blade.php -->
 
-@extends('layouts.app') <!-- Assuming you have a layout file -->
+@extends('layouts.app')
 
 @section('content')
 <section class="vh-100" style="background-color: #eee;">
@@ -14,7 +13,7 @@
 
                                 <p class="text-center h1 fw-bold mb-5 mx-1 mx-md-4 mt-4">Sign up</p>
 
-                                <form method="POST" action="{{ route('register.submit') }}">
+                                <form id="registerForm" method="POST" action="{{ route('register.submit') }}">
                                     @csrf
 
                                     <div class="mb-4">
@@ -78,5 +77,45 @@
             </div>
         </div>
     </div>
+
+    <!-- Modal -->
+    @include('components.verification-modal')
+
+
+    <script>
+        document.getElementById('registerForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const formData = new FormData(this);
+            fetch('{{ route('register.submit') }}', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message) {
+                    $('#verificationModal').modal('show');
+                    $('#verificationModal').on('hidden.bs.modal', function () {
+                        window.location.href = '{{ route('login.form') }}';
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+    
+        $(document).ready(function() {
+            @if(isset($showModal) && $showModal)
+                $('#verificationModal').modal('show');
+                $('#verificationModal').on('hidden.bs.modal', function () {
+                    window.location.href = '{{ route('login.form') }}';
+                });
+            @endif
+        });
+    </script>
+
 </section>
 @endsection
