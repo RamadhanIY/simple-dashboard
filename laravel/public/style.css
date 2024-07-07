@@ -90,3 +90,11 @@ body, html {
     width: calc(100% - 250px);
     z-index: 2;
 }
+
+.card-label {
+    display: inline-block;
+    width: auto;
+    padding: 0.5rem;
+    background-color: #4ba2f8; /* Optional: to make the label more visually distinct */
+    border-radius: 0.25rem; /* Optional: to give the label rounded corners */
+}

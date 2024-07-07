@@ -13,7 +13,7 @@
 
     <!-- Nav Item - Dashboard -->
     <li class="nav-item">
-        <a class="nav-link" href="index.html">
+        <a class="nav-link">
             <i class="fas fa-fw fa-tachometer-alt"></i>
             <span>Project Dashboard</span></a>
     </li>
@@ -26,7 +26,7 @@
 
     <div id="projects" class="sidebar-item p-3" style="cursor: pointer;">
         <i class="fas fa-fw fa-cog"></i>
-        <span>Projects</span>
+        <a href="{{route('projects.index')}}">Projects</a>
     </div>
     
     
@@ -62,6 +62,18 @@
             </div>
         </div>
     </div>
+    
+    <script>
+        // Logout Modal
+        function closeModal(modalId) {
+            var modal = document.getElementById(modalId);
+            modal.classList.remove('show');
+            modal.style.display = 'none';
+            modal.setAttribute('aria-hidden', 'true');
+        }
+    </script>
+    
+
     
 
     

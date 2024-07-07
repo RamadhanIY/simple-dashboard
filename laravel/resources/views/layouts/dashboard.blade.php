@@ -17,6 +17,7 @@
 
     <!-- Custom styles for this template -->
     <link href="{{ asset('../sb-admin-2.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('../style.css') }}" rel="stylesheet">
 
 
 </head>
@@ -60,19 +61,10 @@
         <i class="fas fa-angle-up"></i>
     </a>
 
-    <script>
-        function closeModal(modalId) {
-            var modal = document.getElementById(modalId);
-            modal.classList.remove('show');
-            modal.style.display = 'none';
-            modal.setAttribute('aria-hidden', 'true');
-        }
-    </script>
-    <script>
-        document.getElementById('projects').addEventListener('click', function() {
-            window.location.href = '{{ route('projects.index') }}';
-        });
-    </script>
+    
+
+    
+    
 
 
 </body>

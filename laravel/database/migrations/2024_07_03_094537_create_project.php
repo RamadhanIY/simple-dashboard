@@ -19,11 +19,11 @@ return new class extends Migration
             $table->longText('project_description');
             $table->timestamp('deadline')->nullable();
             $table->timestamps();
-            $table->string('created_by');
-            $table->string('updated_by')->nullable();
+            $table->unsignedBigInteger('created_by');
+            $table->unsignedBigInteger('updated_by')->nullable();
 
-            // $table->foreign('created_by')->references('id')->on('users')->onDelete('cascade');
-            // $table->foreign('updated_by')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('created_by')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('updated_by')->references('id')->on('users')->onDelete('cascade');
         });
     }
 

@@ -16,6 +16,8 @@
                 <th>Name</th>
                 <th>Description</th>
                 <th>Deadline</th>
+                <th>PIC</th>
+                <th>Last Update By</th>
                 <th>Actions</th>
             </tr>
         </thead>
@@ -24,10 +26,11 @@
             <tr>
                 <td>{{ $project->project_name }}</td>
                 <td>{{ $project->project_description }}</td>
-                <td>{{ $project->deadline }}</td>
+                <td>{{ $project->formatted_deadline }}</td>
+                <td>{{ $project->creator->name }}</td>
+                <td>{{$project->updater ? $project->updater->name : $project->creator->name}}</td>
                 <td>
-                    <a href="{{ route('projects.show', $project->id) }}" class="btn btn-info">View</a>
-                    <a href="{{ route('projects.edit', $project->id) }}" class="btn btn-warning">Edit</a>
+                    <a href="{{ route('projects.show', $project->id) }}" class="btn btn-info">View Project</a>
                     <form action="{{ route('projects.destroy', $project->id) }}" method="POST" style="display:inline;">
                         @csrf
                         @method('DELETE')
