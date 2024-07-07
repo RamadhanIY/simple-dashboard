@@ -27,15 +27,18 @@
 
             <div class="form-group">
                 <label for="files">Upload Files (optional)</label>
-                <input type="file" class="form-control-file" id="files" name="files[]" multiple>
+                    <div class="custom-file-upload">
+                        <input type="file" id="files" name="files[]" multiple>
+                        <label for="files" class="custom-file-upload-label">Choose files</label>
+                    </div>
             </div>
 
             <div id="file-previews" class="mt-3"></div>
 
-            <div class="form-group">
+            {{-- <div class="form-group">
                 <label for="commit_messages">Commit Messages (optional)</label>
                 <input type="text" class="form-control" id="commit_messages" name="commit_messages[]" placeholder="Enter commit message for each file">
-            </div>
+            </div> --}}
 
             <button type="submit" class="btn btn-primary">Create Project</button>
         </form>

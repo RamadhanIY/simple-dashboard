@@ -16,7 +16,8 @@ return new class extends Migration
         Schema::create('project_files', function (Blueprint $table) {
             $table->id(); 
             $table->unsignedBigInteger('project_id'); 
-            $table->string('file', 255); 
+            $table->string('filename', 255); 
+            $table->string('filepath', 255); 
             $table->string('mime_type', 50); 
             $table->timestamps(); 
             $table->unsignedBigInteger('created_by'); 

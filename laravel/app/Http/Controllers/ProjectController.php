@@ -46,35 +46,24 @@ class ProjectController extends Controller
             'project_description' => 'required|string',
             'deadline' => 'required|date',
             'files.*' => 'file|mimes:jpg,jpeg,png,pdf',
-            'commit_messages' => 'array',
-            'commit_messages.*' => 'nullable|string',
-            'created_by' => 'required', // Ensure created_by is a valid user ID
+            'created_by' => 'required',
         ]);
 
             // Create the project
         $project = Project::create($request->only('project_name', 'project_description', 'deadline', 'created_by'));
 
-        // Debugging point to check if the project is created correctly
-        // dd($project);
-    // }
-    
-
-    
-        // Check if files are present in the request
         if ($request->hasFile('files')) {
             foreach ($request->file('files') as $index => $file) {
-                $path = $file->store('storage', 'public');
-
-                // Dump and die the file path and commit message to check their values
-                // dd($path, $request->commit_messages[$index]);
-
+                $path = $file->store('projects');
+                $originalName = $file->getClientOriginalName();
                 ProjectFile::create([
                     'project_id' => $project->id,
-                    'file' => $path,
+                    'filename' => $originalName,
+                    'filepath'=>$path,
                     'mime_type' => $file->getClientMimeType(),
-                    'commit_message' => $request->commit_messages[$index] ?? null,
                     'created_by' => $request->created_by,
                 ]);
+                
             }
         }
 
@@ -118,7 +107,6 @@ class ProjectController extends Controller
             'project_description' => 'required|string',
             'deadline' => 'required|date',
             'files.*' => 'file|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            'commit_messages' => 'array',
         ]);
 
         $project->update([
@@ -168,6 +156,34 @@ class ProjectController extends Controller
         return redirect()->route('projects.show', $project->id)->with('success', 'Project updated successfully.');
     }
 
+    public function uploadFile(Request $request, Project $project)
+    {   
+        $request->merge(['created_by' => Auth::id()]);
+
+        $request->validate([
+            'files.*' => 'required|file|mimes:jpeg,png,jpg,gif,svg|max:2048', // Validate each file
+        ]);
+
+        if ($request->hasFile('files')) {
+            foreach ($request->file('files') as $index => $file) {
+                $path = $file->store('projects'); // Store file in storage/app/projects directory
+                $originalName = $file->getClientOriginalName();
+
+                // Create ProjectFile instance and save to database
+                $projectFile = new ProjectFile();
+                $projectFile->project_id = $project->id;
+                $projectFile->filename = $originalName;
+                $projectFile->filepath = $path;
+                $projectFile->mime_type = $file->getClientMimeType();
+                $projectFile->created_by = $request->created_by; 
+                $projectFile->save();
+            }
+
+            return redirect()->route('projects.show', $project->id)->with('success', 'Project updated successfully.');
+        }
+
+        return response()->json(['success' => false, 'message' => 'No files were uploaded'], 400);
+    }
     /**
      * Remove the specified project from storage.
      *

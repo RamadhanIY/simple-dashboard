@@ -10,7 +10,7 @@ class ProjectFile extends Model
     use HasFactory;
 
     protected $fillable = [
-        'project_id', 'file', 'mime_type', 'created_by', 'updated_by'
+        'project_id', 'filename','filepath', 'mime_type', 'created_by', 'updated_by'
     ];
 
     public function project()
