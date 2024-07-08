@@ -2,8 +2,8 @@
 
 @section('title', 'Projects')
 @section('header')
-<div class="page-header">
-    <h1 class="h3 mb-4 text-gray-800">Project List</h1>
+<div class="page-header p-3">
+    <h1 class="page-title h3 mb-4 text-gray-800">Project List</h1>
 </div>
 @endsection
 
@@ -41,5 +41,8 @@
             @endforeach
         </tbody>
     </table>
+    <div class="d-flex justify-content-center">
+        {{ $projects->links('pagination::bootstrap-4') }}
+    </div>
 </div>
 @endsection

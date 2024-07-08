@@ -8,21 +8,56 @@
 <div class="container">
     <div class="card o-hidden border-0 shadow-lg my-5">
         <div class="card-body p-0">
-            <h1 class="h4 text-gray-900 mb-4 px-4 pt-3">{{$project->project_name}}</h1>
+            <div class="d-flex justify-content-between align-items-center pt-3 pb-3">
+                <h1 class="h3 text-gray-900 mb-0 ms-4">{{$project->project_name}}</h1>
+                <button id="editNameBtn" type="button" class="btn btn-primary btn-sm me-5">Edit</button> 
+            </div>
+
+            <div id="editNameForm" style="display: none;" class="card-body pt-3 pb-3">
+                <form action="{{ route('projects.update_name', $project->id) }}" method="POST">
+                    @csrf
+                    @method('PUT')
+                    <div class="input-group">
+                        <input type="text" class="form-control" name="project_name" value="{{ $project->project_name }}" required>
+                        <button type="submit" class="btn btn-primary">Save</button>
+                    </div>
+                </form>
+            </div>
+            
             <div class="row px-4 pb-3">
-                <div class="col-sm-6 mb-3 mb-sm-0">
-                    <div class="card">
-                        <div class="card-body">
-                            <h6 class="card-title">PIC Project</h6>
-                            <p class="card-label">{{$project->creator->name}}</p>
+                <div class="row">
+                    <div class="col-sm-6 mb-3 mb-sm-0">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center pt-3 pb-3">
+                                    <h3 class="h5 text-gray-900 mb-0">Created By</h3>
+                                </div>
+                                <p class="card-label p-2">{{$project->creator->name}}</p>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="col-sm-6">
-                    <div class="card">
-                        <div class="card-body">
-                            <h6 class="card-title">Due Date Project</h6>
-                            <p class="card-label">{{$project->formatted_deadline}}</p>
+                    <div class="col-sm-6">
+                        <div class="card">
+                            <div class="d-flex justify-content-between align-items-center px-2 pt-3 pb-3">
+                                <h3 class="h5 text-gray-900 mb-0">Deadline</h3>
+                                <button id="editDeadlineBtn" type="button" class="btn btn-primary btn-sm">Edit</button>
+                            </div>
+
+                            <div id="editDeadlineForm" style="display: none;" class="card-body pt-3 pb-3">
+                                <form action="{{ route('projects.update_deadline', $project->id) }}" method="POST">
+                                    @csrf
+                                    @method('PUT')
+                                    <div class="input-group">
+                                        <input type="date" class="form-control" name="deadline" value="{{ $project->deadline }}" required>
+                                        <button type="submit" class="btn btn-primary">Save</button>
+                                    </div>
+                                </form>
+                            </div>
+                
+                            <div class="card-label mb-3 d-flex justify-content-center mx-2" style="width: {{ strlen($project->formatted_deadline) * 1 }}rem; height: auto">
+                                <h6 class="label-title">{{$project->formatted_deadline}}</h6>
+                            </div>
+                            
                         </div>
                     </div>
                 </div>
@@ -60,9 +95,12 @@
                                 <li class="list-group-item d-flex justify-content-between align-items-center">
                                     {{ $file->filename }}
                                     <div class="btn-group" role="group">
-                                        <a href="{{ route('projects.download_file', ['project' => $project->id, 'file' => $file->id]) }}" class="btn btn-sm btn-outline-primary">Download</a>
-                                        <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button>
-                                        <button type="button" class="btn btn-sm btn-outline-danger">Delete</button>
+                                        <a href="{{ route('projects.files.download', ['project' => $project->id, 'file' => $file->id]) }}" class="btn btn-sm btn-outline-primary">Download</a>
+                                        <form action="{{ route('projects.files.delete', ['project' => $project->id, 'file' => $file->id]) }}" method="POST" style="display: inline;">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Are you sure?')">Delete</button>
+                                        </form>
                                     </div>
                                 </li>
                             @endforeach
@@ -86,22 +124,7 @@
                             <div id="file-previews" class="mt-3"></div>
                             <button id="submitFilesBtn" type="submit" class="btn btn-primary mt-3">Upload Files</button>
                         </form>
-                
-                       
-                        {{-- <!-- Dropzone for adding new files -->
-                        <form class="form" action="{{ route('projects.upload_file', $project->id) }}" method="post" enctype="multipart/form-data">
-                            @csrf
-                            <div class="dropzone" id="kt_dropzonejs_example_2">
-                                <div class="dz-message needsclick">
-                                    <i class="ki-duotone ki-file-up fs-3x text-primary"><span class="path1"></span><span class="path2"></span></i>
-                                    <div class="ms-4">
-                                        <h3 class="fs-5 fw-bold text-gray-900 mb-1">Drop files here or click to upload.</h3>
-                                        <span class="fs-7 fw-semibold text-gray-500">Upload up to 10 files</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <button id="submitFilesBtn" type="button" class="btn btn-primary mt-3">Upload Files</button>
-                        </form> --}}
+        
                     </div>
                 </div>
             
@@ -147,6 +170,28 @@
         </div>
     </div>
 </div>
+
+<!-- Modal for error messages -->
+<div class="modal fade" id="errorModal" tabindex="-1" role="dialog" aria-labelledby="errorModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="errorModalLabel">Error</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                {{ session('upload_error') }}
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -206,40 +251,28 @@
     });
 </script>
 
-{{-- <script>
-    Dropzone.autoDiscover = false;
+@if (session('upload_error'))
+    <script>
+        $(document).ready(function() {
+            $('#errorModal').modal('show');
+        });
+    </script>
+@endif
 
-    var myDropzone = new Dropzone("#kt_dropzonejs_example_2", {
-        url: "{{ route('projects.upload_file', $project->id) }}",
-        paramName: "file",
-        maxFiles: 10,
-        maxFilesize: 10, // MB
-        addRemoveLinks: true,
-        
-        init: function () {
-            var submitButton = document.querySelector("#submitFilesBtn");
-            var successModal = new bootstrap.Modal(document.getElementById('successModal'), {
-                keyboard: false
-            });
-
-            submitButton.addEventListener("click", function () {
-                myDropzone.processQueue(); // Trigger file upload process
-
-                // Handle success event
-                this.on("success", function (file, response) {
-                    successModal.show(); // Show success modal on successful upload
-                });
-
-                // Handle complete event (after all files are uploaded)
-                this.on("complete", function (file) {
-                    myDropzone.removeFile(file); // Remove file from Dropzone
-                });
-            });
-        }
+<script>
+    $(document).ready(function() {
+        $('#editNameBtn').click(function() {
+            $('#editNameForm').toggle();
+        });
     });
-</script> --}}
+</script>
 
-
-
+<script>
+    $(document).ready(function() {
+        $('#editDeadlineBtn').click(function() {
+            $('#editDeadlineForm').toggle();
+        });
+    });
+</script>
 
 @endsection

@@ -93,10 +93,15 @@ body, html {
 
 .card-label {
     display: inline-block;
-    width: auto;
-    padding: 0.5rem;
     background-color: #4ba2f8; /* Optional: to make the label more visually distinct */
     border-radius: 0.25rem; /* Optional: to give the label rounded corners */
+    color: white;
+}
+
+.label-title {
+    color: white;
+    padding: 0.5rem;
+    
 }
 
 .dropzone {
@@ -142,4 +147,16 @@ body, html {
     font-weight: bold;
     color: #333;
     margin-top: 10px;
+}
+
+.sidebar-header,.sidebar-title, .sidebar-item, .sidebar-item-title {
+    color: white;
+    font-size: 1rem; /* Adjust font size as needed */
+    
+}
+
+.sidebar-title:hover, .sidebar-item:hover {
+    color: #a7c5e3; /* Slightly lighter white for hover effect */
+    text-decoration: none; /* Remove underline */
+    cursor: pointer;
 }

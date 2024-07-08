@@ -5,45 +5,35 @@
         <div class="sidebar-brand-icon rotate-n-15">
             <i class="fas fa-laugh-wink"></i>
         </div>
-        <div class="sidebar-brand-text mx-3">PT Adikarya <sup>2</sup></div>
+        <div class="sidebar-brand-text mx-3">PT Adikarya <sup></sup></div>
     </a>
 
     <!-- Divider -->
     <hr class="sidebar-divider my-0">
 
     <!-- Nav Item - Dashboard -->
-    <li class="nav-item">
-        <a class="nav-link">
-            <i class="fas fa-fw fa-tachometer-alt"></i>
-            <span>Project Dashboard</span></a>
+    <li class="container-fluid sidebar-header p-3">
+        <i class="fa-solid fa-table-columns"></i>
+        <a class="sidebar-title">Project Dashboard</a>
     </li>
 
     <!-- Divider -->
     <hr class="sidebar-divider">
 
-    <!-- Heading (Ganti Font)-->
 
-
-    <div id="projects" class="sidebar-item p-3" style="cursor: pointer;">
+    <div id="projects" class="sidebar-item p-3">
         <i class="fas fa-fw fa-cog"></i>
-        <a href="{{route('projects.index')}}">Projects</a>
+        <a class = "sidebar-item-title" href="{{route('projects.index')}}">Projects</a>
     </div>
-    
-    
 
     <div id="logout" class="sidebar-item p-3" data-bs-toggle="modal" data-bs-target="#logoutModal">
-        <i class="fas fa-fw fa-cog"></i>
-        <span>Logout</span>
+        <i class="fa-solid fa-arrow-right-from-bracket"></i>
+        <a class="sidebar-item-title">Logout</a>
     </div>
 
     <!-- Divider -->
     <hr class="sidebar-divider d-none d-md-block">
-
-    <!-- Sidebar Toggler (Sidebar) -->
-    <div class="text-center d-none d-md-inline">
-        <button class="rounded-circle border-0" id="sidebarToggle"></button>
-    </div>
-    d
+    
     <!-- Logout Modal -->
     <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
