@@ -20,11 +20,11 @@
                                         <input id="name" type="text" 
                                                class="form-control @error('name') is-invalid @enderror" 
                                                name="name" value="{{ old('name') }}" required autocomplete="name" autofocus>
-                                        @error('name')
                                         <span class="invalid-feedback" role="alert">
-                                            <strong>{{ $message }}</strong>
+                                            @error('name')
+                                                <strong>{{ $message }}</strong>
+                                            @enderror
                                         </span>
-                                        @enderror
                                     </div>
 
                                     <div class="mb-4">
@@ -32,11 +32,11 @@
                                         <input id="email" type="email" 
                                                class="form-control @error('email') is-invalid @enderror" 
                                                name="email" value="{{ old('email') }}" required autocomplete="email">
-                                        @error('email')
                                         <span class="invalid-feedback" role="alert">
-                                            <strong>{{ $message }}</strong>
+                                            @error('email')
+                                                <strong>{{ $message }}</strong>
+                                            @enderror
                                         </span>
-                                        @enderror
                                     </div>
 
                                     <div class="mb-4">
@@ -44,11 +44,11 @@
                                         <input id="password" type="password" 
                                                class="form-control @error('password') is-invalid @enderror" 
                                                name="password" required autocomplete="new-password">
-                                        @error('password')
                                         <span class="invalid-feedback" role="alert">
-                                            <strong>{{ $message }}</strong>
+                                            @error('password')
+                                                <strong>{{ $message }}</strong>
+                                            @enderror
                                         </span>
-                                        @enderror
                                     </div>
 
                                     <div class="mb-4">
@@ -68,7 +68,6 @@
                                         <button type="submit" class="btn btn-primary btn-lg">{{ __('Register') }}</button>
                                     </div>
                                 </form>
-
 
                             </div>
                             <div class="col-md-10 col-lg-6 col-xl-7 d-flex align-items-center order-1 order-lg-2">
@@ -111,19 +110,14 @@
                 }
             })
             .then(response => {
-                console.log('Response:', response);
                 if (!response.ok) {
-                    throw new Error('Network response was not ok ' + response.statusText);
+                    return response.json().then(err => {
+                        throw err;
+                    });
                 }
-                const contentType = response.headers.get("content-type");
-                if (contentType && contentType.indexOf("application/json") !== -1) {
-                    return response.json();
-                } else {
-                    throw new Error('Response is not JSON');
-                }
+                return response.json();
             })
             .then(data => {
-                console.log('Data:', data);
                 if (data.message) {
                     $('#verificationModal').modal('show');
                     $('#verificationModal').on('hidden.bs.modal', function () {
@@ -132,9 +126,28 @@
                 }
             })
             .catch(error => {
-                console.error('Error:', error);
+                if (error.errors) {
+                    // Clear any previous errors
+                    document.querySelectorAll('.invalid-feedback').forEach(el => el.textContent = '');
+                    document.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
+
+                    // Display validation errors
+                    for (const [field, messages] of Object.entries(error.errors)) {
+                        const input = document.querySelector(`[name="${field}"]`);
+                        if (input) {
+                            input.classList.add('is-invalid');
+                            const feedback = input.nextElementSibling;
+                            if (feedback && feedback.classList.contains('invalid-feedback')) {
+                                feedback.textContent = messages.join(', ');
+                            }
+                        }
+                    }
+                } else {
+                    console.error('Unexpected error:', error);
+                }
             });
         });
+
     
         $(document).ready(function() {
             @if(isset($showModal) && $showModal)

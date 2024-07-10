@@ -26,7 +26,7 @@
             
             <div class="row px-4 pb-3">
                 <div class="row">
-                    <div class="col-sm-6 mb-3 mb-sm-0">
+                    <div class="col-sm-6">
                         <div class="card">
                             <div class="card-body">
                                 <div class="d-flex justify-content-between align-items-center pt-3 pb-3">
@@ -38,25 +38,29 @@
                     </div>
                     <div class="col-sm-6">
                         <div class="card">
-                            <div class="d-flex justify-content-between align-items-center px-2 pt-3 pb-3">
-                                <h3 class="h5 text-gray-900 mb-0">Deadline</h3>
-                                <button id="editDeadlineBtn" type="button" class="btn btn-primary btn-sm">Edit</button>
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between py-3">
+                                    <h3 class="h5 text-gray-900 mb-0">Deadline</h3>
+                                    <button id="editDeadlineBtn" type="button" class="btn btn-primary btn-sm">Edit</button>
+                                </div>
+                                <div id="editDeadlineForm" style="display: none;" class="card-body pt-3 pb-3">
+                                    <form action="{{ route('projects.update_deadline', $project->id) }}" method="POST">
+                                        @csrf
+                                        @method('PUT')
+                                        <div class="input-group">
+                                            <input type="date" class="form-control" name="deadline" value="{{ $project->deadline }}" required>
+                                            <button type="submit" class="btn btn-primary">Save</button>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="card-label mb-3 d-flex align-items-center justify-content-center" style="width: {{ strlen($project->formatted_deadline) * 1 }}rem; height: auto">
+                                    <h6 class="label-title mb-0">{{$project->formatted_deadline}}</h6>
+                                </div>
                             </div>
 
-                            <div id="editDeadlineForm" style="display: none;" class="card-body pt-3 pb-3">
-                                <form action="{{ route('projects.update_deadline', $project->id) }}" method="POST">
-                                    @csrf
-                                    @method('PUT')
-                                    <div class="input-group">
-                                        <input type="date" class="form-control" name="deadline" value="{{ $project->deadline }}" required>
-                                        <button type="submit" class="btn btn-primary">Save</button>
-                                    </div>
-                                </form>
-                            </div>
+                            
                 
-                            <div class="card-label mb-3 d-flex justify-content-center mx-2" style="width: {{ strlen($project->formatted_deadline) * 1 }}rem; height: auto">
-                                <h6 class="label-title">{{$project->formatted_deadline}}</h6>
-                            </div>
+                           
                             
                         </div>
                     </div>
@@ -96,11 +100,8 @@
                                     {{ $file->filename }}
                                     <div class="btn-group" role="group">
                                         <a href="{{ route('projects.files.download', ['project' => $project->id, 'file' => $file->id]) }}" class="btn btn-sm btn-outline-primary">Download</a>
-                                        <form action="{{ route('projects.files.delete', ['project' => $project->id, 'file' => $file->id]) }}" method="POST" style="display: inline;">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Are you sure?')">Delete</button>
-                                        </form>
+                                        <button class="btn btn-sm btn-outline-secondary" onclick="showEditModal('{{ $file->id }}', '{{ $file->filename }}', '{{ $project->id }}')">Edit</button>
+                                        <button class="btn btn-sm btn-outline-danger" onclick="showDeleteModal('{{ $file->id }}', '{{ $project->id }}')">Delete</button>
                                     </div>
                                 </li>
                             @endforeach
@@ -153,6 +154,31 @@
     </div>
 </div>
 
+<!-- Delete Confirmation Modal -->
+<div id="deleteModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Confirm Delete</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete the file?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <form id="deleteForm" method="POST" style="display: inline;">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="btn btn-primary">Confirm</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Modal for Upload Files -->
 <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -170,6 +196,34 @@
         </div>
     </div>
 </div>
+
+
+<!-- Edit Modal -->
+<div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <form id="editForm" method="POST">
+            @csrf
+            @method('PUT')
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editModalLabel">Edit File Name</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="filename" class="form-label">File Name</label>
+                        <input type="text" class="form-control" id="filename" name="filename" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Save changes</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
 
 <!-- Modal for error messages -->
 <div class="modal fade" id="errorModal" tabindex="-1" role="dialog" aria-labelledby="errorModalLabel" aria-hidden="true">
@@ -206,7 +260,6 @@
     
         editBtn.addEventListener('click', function() {
             editableDescription.setAttribute('contenteditable', 'true');
-            editableDescription.focus();
             editBtn.style.display = 'none';
             descriptionButtons.style.display = 'block';
         });
@@ -249,6 +302,21 @@
         document.getElementById('uploadForm').submit();
         $('#successModal').modal('show'); // Show the success modal after form submission
     });
+
+    function showEditModal(fileId, fileName, projectId) {
+        const editForm = document.getElementById('editForm');
+        editForm.action = `/projects/${projectId}/files/${fileId}`;
+        document.getElementById('filename').value = fileName;
+        const editModal = new bootstrap.Modal(document.getElementById('editModal'));
+        editModal.show();
+    }
+
+    function showDeleteModal(fileId, projectId) {
+        const deleteForm = document.getElementById('deleteForm');
+        deleteForm.action = `/projects/${projectId}/files/${fileId}`;
+        const deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
+        deleteModal.show();
+    }
 </script>
 
 @if (session('upload_error'))

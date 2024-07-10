@@ -206,6 +206,33 @@ class ProjectController extends Controller
         return Storage::download($file->filepath, $file->filename);
     }
 
+    public function updateFile(Request $request, Project $project, ProjectFile $file)
+    {
+
+        $request->validate([
+            'filename' => 'required|string|max:255',
+        ]);
+
+        $currentExtension = pathinfo($file->filename, PATHINFO_EXTENSION);
+        $newFilename = $request->filename;
+
+        if (pathinfo($newFilename, PATHINFO_EXTENSION) != $currentExtension) {
+            $newFilename .= '.' . $currentExtension;
+        }
+
+        $project->update([
+            'updated_by' => Auth::id(),
+        ]);
+
+        $file->update([
+            'filename' => $newFilename,
+            'updated_by'=> Auth::id(),
+        ]);
+
+
+        return redirect()->route('projects.show', $project->id)->with('success', 'File name updated successfully.');
+    }
+
 
     public function deleteFile(Project $project, ProjectFile $file)
     {
