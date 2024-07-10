@@ -26,8 +26,7 @@ class RegisterForm extends Component
             'password' => Hash::make($this->password),
         ]);
 
-        session()->flash('success', 'Registration successful. Please log in.');
-        return redirect()->route('login');
+        return redirect()->route('verification.notice');
     }
 
     public function render()

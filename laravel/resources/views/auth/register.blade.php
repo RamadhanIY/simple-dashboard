@@ -55,6 +55,11 @@
                                         <label for="password-confirm">{{ __('Confirm Password') }}</label>
                                         <input id="password-confirm" type="password" 
                                                class="form-control" name="password_confirmation" required autocomplete="new-password">
+                                        <span class="invalid-feedback" role="alert">
+                                            @error('password')
+                                                <strong>{{ $message }}</strong>
+                                            @enderror
+                                        </span>
                                     </div>
 
                                     <div class="form-check mb-4">
@@ -64,8 +69,15 @@
                                         </label>
                                     </div>
 
+                                    <div id="requirementsMessage" class="text-center mb-3"></div>
+
+
                                     <div class="d-flex justify-content-center mx-4 mb-3 mb-lg-4">
-                                        <button type="submit" class="btn btn-primary btn-lg">{{ __('Register') }}</button>
+                                        <button type="button" id="verifyRequirements" class="btn btn-primary btn-lg">{{ __('Verify Requirements') }}</button>
+                                    </div>
+                                    
+                                    <div class="d-flex justify-content-center mx-4 mb-3 mb-lg-4">
+                                        <button type="submit" id="registerButton" class="btn btn-primary btn-lg" disabled>{{ __('Register') }}</button>
                                     </div>
                                 </form>
 
@@ -87,6 +99,7 @@
     @include('components.verification-modal')
 
     <script>
+
         document.getElementById('showPassword').addEventListener('change', function() {
             const passwordField = document.getElementById('password');
             const confirmPasswordField = document.getElementById('password-confirm');
@@ -99,8 +112,99 @@
             }
         });
 
+        function validateName(name) {
+        if (!name) {
+            return 'Please fill your Full Name';
+        }
+        return '';
+        }
+
+        function validateEmail(email) {
+            if (!email) {
+                return 'Email is required';
+            }
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                return 'Please enter a valid email address';
+            }
+            return '';
+        }
+
+        function validatePassword(password) {
+            if (!password) {
+                return 'Password is required';
+            }
+            if (password.length < 12) {
+                return 'Password must be at least 12 characters long';
+            }
+            return '';
+        }
+
+        function validatePasswordConfirmation(password, passwordConfirmation) {
+            if (!passwordConfirmation) {
+                return 'Password confirmation is required';
+            }
+            if (password !== passwordConfirmation) {
+                return 'Password confirmation must match the password';
+            }
+            return '';
+        }
+
+        function validateForm() {
+            const name = document.getElementById('name').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value.trim();
+            const confirmPassword = document.getElementById('password-confirm').value.trim();
+
+            const errors = {};
+
+            errors.name = validateName(name);
+            errors.email = validateEmail(email);
+            errors.password = validatePassword(password);
+            errors.password_confirmation = validatePasswordConfirmation(password, confirmPassword);
+
+            displayErrors(errors);
+
+            const registerButton = document.getElementById('registerButton');
+            registerButton.disabled = Object.values(errors).some(error => error !== '');
+
+            return Object.values(errors).every(error => error === '');
+        }
+
+        function displayErrors(errors) {
+            document.querySelectorAll('.invalid-feedback').forEach(el => el.textContent = '');
+            document.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
+
+            Object.keys(errors).forEach(field => {
+                const input = document.querySelector(`[name="${field}"]`);
+                if (input) {
+                    input.classList.add('is-invalid');
+                    const feedback = input.nextElementSibling;
+                    if (feedback && feedback.classList.contains('invalid-feedback')) {
+                        feedback.textContent = errors[field];
+                    }
+                }
+            });
+        }
+
+        document.getElementById('verifyRequirements').addEventListener('click', function() {
+            validateForm();
+        });
+
+        document.getElementById('registerForm').addEventListener('submit', function(event) {
+            if (!validateForm()) {
+                event.preventDefault(); 
+            }
+        });
+
+        // Initialize validation on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            displayErrors({});
+        });
+    
         document.getElementById('registerForm').addEventListener('submit', function(event) {
             event.preventDefault();
+            
             const formData = new FormData(this);
             fetch('{{ route('register.submit') }}', {
                 method: 'POST',
@@ -127,11 +231,9 @@
             })
             .catch(error => {
                 if (error.errors) {
-                    // Clear any previous errors
                     document.querySelectorAll('.invalid-feedback').forEach(el => el.textContent = '');
                     document.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
-
-                    // Display validation errors
+    
                     for (const [field, messages] of Object.entries(error.errors)) {
                         const input = document.querySelector(`[name="${field}"]`);
                         if (input) {
@@ -147,17 +249,9 @@
                 }
             });
         });
-
     
-        $(document).ready(function() {
-            @if(isset($showModal) && $showModal)
-                $('#verificationModal').modal('show');
-                $('#verificationModal').on('hidden.bs.modal', function () {
-                    window.location.href = '{{ route('login.form') }}';
-                });
-            @endif
-        });
     </script>
+    
 
 </section>
 @endsection
