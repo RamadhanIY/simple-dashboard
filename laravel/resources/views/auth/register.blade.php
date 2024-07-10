@@ -1,4 +1,3 @@
-
 @extends('layouts.app')
 
 @section('content')
@@ -58,6 +57,13 @@
                                                class="form-control" name="password_confirmation" required autocomplete="new-password">
                                     </div>
 
+                                    <div class="form-check mb-4">
+                                        <input class="form-check-input" type="checkbox" id="showPassword">
+                                        <label class="form-check-label" for="showPassword">
+                                            {{ __('Show Password') }}
+                                        </label>
+                                    </div>
+
                                     <div class="d-flex justify-content-center mx-4 mb-3 mb-lg-4">
                                         <button type="submit" class="btn btn-primary btn-lg">{{ __('Register') }}</button>
                                     </div>
@@ -81,8 +87,19 @@
     <!-- Modal -->
     @include('components.verification-modal')
 
-
     <script>
+        document.getElementById('showPassword').addEventListener('change', function() {
+            const passwordField = document.getElementById('password');
+            const confirmPasswordField = document.getElementById('password-confirm');
+            if (this.checked) {
+                passwordField.type = 'text';
+                confirmPasswordField.type = 'text';
+            } else {
+                passwordField.type = 'password';
+                confirmPasswordField.type = 'password';
+            }
+        });
+
         document.getElementById('registerForm').addEventListener('submit', function(event) {
             event.preventDefault();
             const formData = new FormData(this);
@@ -94,12 +111,19 @@
                 }
             })
             .then(response => {
+                console.log('Response:', response);
                 if (!response.ok) {
                     throw new Error('Network response was not ok ' + response.statusText);
                 }
-                return response.json();
+                const contentType = response.headers.get("content-type");
+                if (contentType && contentType.indexOf("application/json") !== -1) {
+                    return response.json();
+                } else {
+                    throw new Error('Response is not JSON');
+                }
             })
             .then(data => {
+                console.log('Data:', data);
                 if (data.message) {
                     $('#verificationModal').modal('show');
                     $('#verificationModal').on('hidden.bs.modal', function () {

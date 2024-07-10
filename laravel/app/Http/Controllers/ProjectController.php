@@ -7,6 +7,7 @@ use App\Models\Project;
 use App\Models\ProjectFile;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Storage;
 
 class ProjectController extends Controller
@@ -189,7 +190,7 @@ class ProjectController extends Controller
                 $projectFile->filename = $originalName;
                 $projectFile->filepath = $path;
                 $projectFile->mime_type = $file->getClientMimeType();
-                $projectFile->updated_by = $request->updated_by; 
+                $projectFile->created_by = $request->created_by; 
                 $projectFile->save();
             }
 

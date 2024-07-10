@@ -1,0 +1,10 @@
+MAIL_DRIVER=smtp
+MAIL_HOST=smtp.gmail.com
+MAIL_PORT=587
+MAIL_USERNAME=728ramadhanihsani@gmail.com
+#728ramadhanihsani@gmail.com
+MAIL_PASSWORD="lzcu ekpw dtmx lows"
+# thisisourstorage@gmail.com
+# MAIL_PASSWORD="bvpd nuyj eglw hkbx" 
+MAIL_ENCRYPTION=ssl
+MAIL_FROM_ADDRESS=728ramadhanihsani@gmail.com

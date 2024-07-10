@@ -20,7 +20,6 @@
     <!-- Divider -->
     <hr class="sidebar-divider">
 
-
     <div id="projects" class="sidebar-item p-3">
         <i class="fas fa-fw fa-cog"></i>
         <a class = "sidebar-item-title" href="{{route('projects.index')}}">Projects</a>
