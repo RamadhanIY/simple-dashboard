@@ -22,13 +22,17 @@ use App\Http\Controllers\Auth\ForgotPasswordController;
 
 
 Route::get('/register', [AuthController::class, 'showRegistrationForm'])->name('register.form');
-
 Route::post('/register', [AuthController::class, 'register'])->name('register.submit');
+Route::get('/email/verify', [AuthController::class, 'showVerification'])->name('verification.notice');
+Route::post('/email/resend', [AuthController::class, 'resendVerification'])->name('verification.resend');
+Route::get('account/verify/{token}', [AuthController::class, 'verifyAccount'])->name('verify.user'); 
+
 
 Route::get('/', [AuthController::class, 'showLoginForm'])->name('login.form');
 
 Route::post('/login', [AuthController::class, 'login'])->name('login.submit');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
 
 // Forget Password
 Route::get('forget-password', [ForgotPasswordController::class, 'showForgetPasswordForm'])->name('forget.password.get');

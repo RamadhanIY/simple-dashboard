@@ -31,11 +31,8 @@
                 <td>{{$project->updater ? $project->updater->name : $project->creator->name}}</td>
                 <td>
                     <a href="{{ route('projects.show', $project->id) }}" class="btn btn-info">View Project</a>
-                    <form action="{{ route('projects.destroy', $project->id) }}" method="POST" style="display:inline;">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure?')">Delete</button>
-                    </form>
+        
+                    <button type="button" class="btn btn-danger" onclick="confirmDelete('{{ $project->id }}')">Delete</button>
                 </td>
             </tr>
             @endforeach
@@ -45,4 +42,39 @@
         {{ $projects->links('pagination::bootstrap-4') }}
     </div>
 </div>
+
+<!-- Delete Confirmation Modal -->
+<div id="deleteProjectModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="ModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteProjectLabel">Confirm Delete</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete the project?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <form id="deleteProject"  method="POST" style="display:inline;">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="btn btn-primary">Confirm</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function confirmDelete(projectId) {
+        const deleteForm = document.getElementById('deleteProject');
+        deleteForm.action = `/projects/${projectId}`;
+        const deleteModal = new bootstrap.Modal(document.getElementById('deleteProjectModal'));
+        deleteModal.show();
+    }
+
+</script>
 @endsection

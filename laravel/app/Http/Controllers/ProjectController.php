@@ -84,7 +84,9 @@ class ProjectController extends Controller
     public function destroy(Project $project)
     {
         foreach ($project->files as $file) {
-            Storage::delete($file->file);
+            if ($file->file) {
+                Storage::delete($file->file);
+            }
             $file->delete();
         }
 

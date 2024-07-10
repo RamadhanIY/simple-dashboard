@@ -12,6 +12,7 @@ use App\Http\Requests\RegistRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Session;
 
 
 class AuthController extends Controller
@@ -49,6 +50,10 @@ class AuthController extends Controller
         
         return redirect()->route('login.form');
     }
+
+
+    // Register Functions
+
     public function showRegistrationForm(){
         return view('auth.register');
     }
@@ -75,10 +80,40 @@ class AuthController extends Controller
             $message->subject('Email Verification Mail');
         });
 
-        return response()->json(['message' => 'Please check your email for verification.']);
+        return view('auth.register', ['showVerificationModal' => true])
+        ->with('message', 'Please check your email for verification.');
 
-    
     }
+
+    public function showVerification()
+    {
+        return view('auth.verification');
+    }
+
+    public function resendVerification(Request $request)
+    {
+        $user = User::find(Session::get('user_id'));
+
+        
+
+        if (!$user) {
+            return redirect()->route('register.form')->with('error', 'User not found.');
+        }
+
+        $token = Str::random(64);
+        VerifyUser::updateOrCreate(
+            ['user_id' => $user->id],
+            ['token' => $token]
+        );
+
+        Mail::send('emails.verify', ['token' => $token], function ($message) use ($user) {
+            $message->to($user->email);
+            $message->subject('Email Verification Mail');
+        });
+
+        return redirect()->route('verification.notice')->with('resent', true);
+    }
+
 
     public function verifyAccount($token)
     {
@@ -87,21 +122,24 @@ class AuthController extends Controller
         if (!$verifyUser) {
             return redirect()->route('login.form')->with('error', 'Invalid verification token.');
         }
-    
+
         $user = $verifyUser->user;
-    
+
         if (!$user->email_verified_at) { 
             $user->email_verified_at = now(); 
             $user->save();
-    
-    
-            $message = "Your e-mail is verified. You can now login.";
+
+            Session::flash('verification_success', true);
+
+            $message = "Your email is verified. You can now login.";
         } else {
-            $message = "Your e-mail is already verified. You can now login.";
+            $message = "Your email is already verified. You can now login.";
         }
-    
+
         return redirect()->route('login.form')->with('message', $message);
     }
+
+
 
     protected function registered(Request $request, $user)
     {
