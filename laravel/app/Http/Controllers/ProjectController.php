@@ -6,9 +6,11 @@ use Carbon\Carbon;
 use App\Models\Project;
 use App\Models\ProjectFile;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
 
 class ProjectController extends Controller
 {   
@@ -17,7 +19,6 @@ class ProjectController extends Controller
     public function index()
     {
         
-
         $projects = Project::with(['creator', 'updater'])->paginate(3);
 
         $projects->getCollection()->transform(function ($project) {
@@ -48,7 +49,11 @@ class ProjectController extends Controller
             'created_by' => 'required',
         ]);
 
-            // Create the project
+        
+        if (Project::count() == 0) {
+            DB::statement('ALTER TABLE users AUTO_INCREMENT = 1;');
+        }
+
         $project = Project::create($request->only('project_name', 'project_description', 'deadline', 'created_by'));
 
         if ($request->hasFile('files')) {
@@ -178,11 +183,26 @@ class ProjectController extends Controller
     {   
         $request->merge(['created_by' => Auth::id()]);
 
-        $request->validate([
-            'files.*' => 'required|file|mimes:jpeg,png,jpg,gif,svg', 
+        $validator = Validator::make($request->all(), [
+            'files.*' => 'required|file|mimes:pdf,jpeg,png,jpg,gif,svg,doc,docx',
+            function ($attribute, $value, $fail) {
+                if (strlen($value->getClientOriginalName()) > 255) {
+                    $fail('The ' . $attribute . ' filename is too long. It should not exceed 255 characters.');
+                }
+            }
         ]);
+        
+        if ($validator->fails()) {
+            Session::flash('upload_error', 'Invalid file type or filename is too long, or no files were uploaded.');
+            return redirect()->route('projects.show', $project->id);
+        }
 
         if ($request->hasFile('files')) {
+
+            if (ProjectFile::count() == 0) {
+                DB::statement('ALTER TABLE project_files AUTO_INCREMENT = 1;');
+            }
+
             foreach ($request->file('files') as $index => $file) {
                 $path = $file->store('projects');
                 $originalName = $file->getClientOriginalName();

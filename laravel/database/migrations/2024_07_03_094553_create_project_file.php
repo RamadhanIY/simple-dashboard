@@ -18,7 +18,7 @@ return new class extends Migration
             $table->unsignedBigInteger('project_id'); 
             $table->string('filename', 255); 
             $table->string('filepath', 255); 
-            $table->string('mime_type', 50); 
+            $table->string('mime_type'); 
             $table->timestamps(); 
             $table->unsignedBigInteger('created_by'); 
             $table->unsignedBigInteger('updated_by')->nullable(); 

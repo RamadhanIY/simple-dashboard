@@ -61,6 +61,10 @@ class AuthController extends Controller
     public function register(RegistRequest $request){
 
         $data = $request->only(['name', 'email', 'password']);
+
+        if (User::count() == 0) {
+            DB::statement('ALTER TABLE users AUTO_INCREMENT = 1;');
+        }
         
         $user = User::create([
             'name' => $data['name'],
@@ -93,8 +97,6 @@ class AuthController extends Controller
     public function resendVerification(Request $request)
     {
         $user = User::find(Session::get('user_id'));
-
-        
 
         if (!$user) {
             return redirect()->route('register.form')->with('error', 'User not found.');

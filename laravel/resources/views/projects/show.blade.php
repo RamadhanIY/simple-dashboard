@@ -125,10 +125,8 @@
                             <div id="file-previews" class="mt-3"></div>
                             <button id="submitFilesBtn" type="submit" class="btn btn-primary mt-3">Upload Files</button>
                         </form>
-        
                     </div>
                 </div>
-            
         </div>
     </div>
 </div>
@@ -239,7 +237,7 @@
                 {{ session('upload_error') }}
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
@@ -300,7 +298,7 @@
 
     document.getElementById('submitFilesBtn').addEventListener('click', function() {
         document.getElementById('uploadForm').submit();
-        $('#successModal').modal('show'); // Show the success modal after form submission
+        $('#successModal').modal('show'); 
     });
 
     function showEditModal(fileId, fileName, projectId) {
